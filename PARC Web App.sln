@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PARC Web App", "PARC Web App.csproj", "{C929C340-4239-41BA-BB69-96C120BE6FC2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C929C340-4239-41BA-BB69-96C120BE6FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C929C340-4239-41BA-BB69-96C120BE6FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C929C340-4239-41BA-BB69-96C120BE6FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C929C340-4239-41BA-BB69-96C120BE6FC2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CF17E5B6-E380-4ED3-86EF-4E9EF8CBD0B3}
+	EndGlobalSection
+EndGlobal
