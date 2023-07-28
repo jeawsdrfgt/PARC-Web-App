@@ -1,14 +1,23 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PARC_Web_App.Data;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using System.Configuration;
+using Microsoft.AspNetCore.Identity.UI.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("PARC_Web_AppContextConnection") ?? throw new InvalidOperationException("Connection string 'PARC_Web_AppContextConnection' not found.");
 
 builder.Services.AddDbContext<PARC_Web_AppContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddDefaultIdentity<PARC_Web_App.Areas.Identity.Data.PARC_Web_AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<PARC_Web_App.Areas.Identity.Data.PARC_Web_AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<PARC_Web_AppContext>();
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
