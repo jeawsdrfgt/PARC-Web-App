@@ -8,6 +8,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using System.Configuration;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using PARC_Web_App.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("PARC_Web_AppContextConnection") ?? throw new InvalidOperationException("Connection string 'PARC_Web_AppContextConnection' not found.");
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<PARC_Web_AppContext>(options =>
 builder.Services.AddDefaultIdentity<PARC_Web_App.Areas.Identity.Data.PARC_Web_AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<PARC_Web_AppContext>();
 
+builder.Services.AddScoped<EmailService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

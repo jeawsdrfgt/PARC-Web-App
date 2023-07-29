@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PARC_Web_App.Areas.Identity.Data;
+using MailKit;
+using System.Net;
 
 namespace PARC_Web_App.Areas.Identity.Pages.Account
 {
@@ -48,29 +50,17 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+   
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+    
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+       
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public class InputModel
         {
             [Required]
@@ -93,29 +83,20 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
             [DataType(DataType.PhoneNumber)]
             public string PhoneNumber { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+        
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
@@ -143,7 +124,7 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
                 user.PhoneNumber = Input.PhoneNumber;
                 user.RegistrationNumber = Input.RegistrationNumber;
 
-                await _userStore.SetUserNameAsync(user, Input.FirstName, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -160,7 +141,7 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await SendEmailAsync(Input.Email, "Confirm your email",
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -183,17 +164,27 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private async Task <bool> SendEmailAsync(string email, string returnUrl, string subject)
+        private async Task<bool> SendEmailAsync(string email, string subject, string returnUrl)
         {
             MailMessage message = new MailMessage();
-            SmtpClient smtpClient=new SmtpClient();
-            message.From = new MailAddress("noreply@parc.cl");
+            SmtpClient smtpClient = new SmtpClient();
+            message.From = new MailAddress("arlasanburgers@gmail.com");
             message.To.Add(email);
             message.Subject = subject;
-            message.IsBodyHtml= true;
             message.Body = returnUrl;
 
+            smtpClient.Port = 587;
+            smtpClient.Host = "smtp.simply.com";
+
+            smtpClient.EnableSsl = true;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential("USERNAME", "PASSWORD");
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtpClient.Send(message);
+
+            return true;
         }
+
         private PARC_Web_AppUser CreateUser()
         {
             try
