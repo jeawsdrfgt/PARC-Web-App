@@ -22,7 +22,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PARC_Web_App.Areas.Identity.Data;
 using MailKit;
-using System.Net;
+using MailKit.Net.Smtp;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using MailKit.Security;
+using MimeKit;
 
 namespace PARC_Web_App.Areas.Identity.Pages.Account
 {
@@ -164,23 +167,20 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private async Task<bool> SendEmailAsync(string email, string subject, string returnUrl)
+        private async Task<bool> SendEmailAsync(string subject, string returnUrl)
         {
-            MailMessage message = new MailMessage();
-            SmtpClient smtpClient = new SmtpClient();
-            message.From = new MailAddress("arlasanburgers@gmail.com");
-            message.To.Add(email);
-            message.Subject = subject;
-            message.Body = returnUrl;
+            var email = new MimeKit.MimeMessage();
+            email.From.Add(MailboxAddress.Parse("emanuel.brekke44@ethereal.email"));
+            email.To.Add(MailboxAddress.Parse("email"));
+            email.Subject = subject;
+            email.Body=new TextPart(returnUrl, _emailSender);
 
-            smtpClient.Port = 587;
-            smtpClient.Host = "smtp.simply.com";
 
-            smtpClient.EnableSsl = true;
-            smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = new NetworkCredential("USERNAME", "PASSWORD");
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtpClient.Send(message);
+            using var smtp = new SmtpClient();
+            smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("emanuel.brekke44@ethereal.email", "dp9DUte1m7jhYbCjfX");
+            smtp.Send(email);
+            smtp.Disconnect(true);
 
             return true;
         }
