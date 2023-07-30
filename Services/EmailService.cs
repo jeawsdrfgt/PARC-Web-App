@@ -31,25 +31,13 @@ namespace PARC_Web_App.Services
             smtp.Disconnect(true);
         }
 
-        public void SendEmail(string email, string v, EmailDto request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SendEmail(string email, string v1, string v2)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task SendEmail()
         {
             throw new NotImplementedException();
         }
 
-        Task IEmailService.SendEmail(EmailDto request)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
  }
 
