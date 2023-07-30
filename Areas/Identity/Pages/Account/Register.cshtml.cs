@@ -26,6 +26,7 @@ using MailKit.Net.Smtp;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 using MailKit.Security;
 using MimeKit;
+using PARC_Web_App.Services;
 
 namespace PARC_Web_App.Areas.Identity.Pages.Account
 {
@@ -36,21 +37,21 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
         private readonly IUserStore<PARC_Web_AppUser> _userStore;
         private readonly IUserEmailStore<PARC_Web_AppUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailService _emailService;
 
         public RegisterModel(
             UserManager<PARC_Web_AppUser> userManager,
             IUserStore<PARC_Web_AppUser> userStore,
             SignInManager<PARC_Web_AppUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailService emailService)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
+            _emailService = emailService;
         }
 
    
@@ -144,7 +145,7 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    await _emailService.SendEmail(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -167,13 +168,13 @@ namespace PARC_Web_App.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private async Task<bool> SendEmailAsync(string subject, string returnUrl)
+        private bool SendEmail(string subject, string returnUrl)
         {
             var email = new MimeKit.MimeMessage();
             email.From.Add(MailboxAddress.Parse("emanuel.brekke44@ethereal.email"));
             email.To.Add(MailboxAddress.Parse("email"));
             email.Subject = subject;
-            email.Body=new TextPart(returnUrl, _emailSender);
+            email.Body = new TextPart(returnUrl, _emailService);
 
 
             using var smtp = new SmtpClient();
